@@ -2,6 +2,8 @@
 
 ## Usage
 
+Add this preset to your `renovate.json`.
+
 ```json
 {
   "extends": [
