@@ -1,0 +1,48 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>whitesource/merge-confidence:beta",
+    "config:base",
+    "group:recommended",
+    "group:monorepos"
+  ],
+  "labels": [
+    "renovate"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "automergeType": "pr",
+    "platformAutomerge": true
+  },
+  "packageRules": [
+    {
+      "matchSourceUrls": [
+        "https://github.com/yjl9903/breadc"
+      ],
+      "groupName": "Breadc monorepo"
+    },
+    {
+      "matchDepTypes": [
+        "devDependencies",
+        "packageManager"
+      ],
+      "automerge": true
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "automerge": true
+    },
+    {
+      "packageNames": [
+        "node"
+      ],
+      "enabled": false
+    }
+  ],
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 0,
+  "rangeStrategy": "bump"
+}
