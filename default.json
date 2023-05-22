@@ -42,7 +42,7 @@
       "enabled": false
     }
   ],
-  "prConcurrentLimit": 10,
+  "prConcurrentLimit": 3,
   "prHourlyLimit": 0,
   "rangeStrategy": "bump"
 }
