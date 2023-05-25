@@ -35,6 +35,12 @@
       "groupName": "UnoCSS monorepo"
     },
     {
+      "matchSourceUrls": [
+        "https://github.com/withastro/astro"
+      ],
+      "groupName": "Astro monorepo"
+    },
+    {
       "matchDepTypes": [
         "devDependencies",
         "packageManager"
