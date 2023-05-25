@@ -23,6 +23,18 @@
       "groupName": "Breadc monorepo"
     },
     {
+      "matchSourceUrls": [
+        "https://github.com/yjl9903/OneKuma"
+      ],
+      "groupName": "OneKuma monorepo"
+    },
+    {
+      "matchSourceUrls": [
+        "https://github.com/unocss/unocss"
+      ],
+      "groupName": "UnoCSS monorepo"
+    },
+    {
       "matchDepTypes": [
         "devDependencies",
         "packageManager"
