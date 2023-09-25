@@ -54,10 +54,16 @@
       "automerge": true
     },
     {
+      "enabled": false,
       "packageNames": [
         "node"
-      ],
-      "enabled": false
+      ]
+    },
+    {
+      "enabled": false,
+      "matchDepTypes": [
+        "peerDependencies"
+      ]
     }
   ],
   "prConcurrentLimit": 3,
