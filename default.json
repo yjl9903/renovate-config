@@ -47,6 +47,10 @@
       "groupName": "Astro monorepo"
     },
     {
+      "matchPackagePrefixes": ["@iconify-json"],
+      "groupName": "iconify"
+    },
+    {
       "matchDepTypes": [
         "devDependencies",
         "packageManager"
