@@ -24,6 +24,12 @@
     },
     {
       "matchSourceUrls": [
+        "https://github.com/yjl9903/breadfs"
+      ],
+      "groupName": "BreadFS monorepo"
+    },
+    {
+      "matchSourceUrls": [
         "https://github.com/yjl9903/naria2"
       ],
       "groupName": "naria2 monorepo"
