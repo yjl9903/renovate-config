@@ -54,6 +54,7 @@
     },
     {
       "matchPackagePrefixes": ["@iconify-json"],
+      "automerge": true,
       "groupName": "iconify"
     },
     {
