@@ -67,7 +67,7 @@
       "groupName": "tailwind utils"
     },
     {
-      "matchPackageNames": ["swagger-ui-react", "lucide-react", "lucide-vue-next"],
+      "matchPackageNames": ["swagger-ui-react", "lucide-react", "lucide-vue-next", "type-fest"],
       "automerge": true
     },
     {
