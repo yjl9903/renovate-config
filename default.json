@@ -62,6 +62,11 @@
       "groupName": "iconify"
     },
     {
+      "matchPackageNames": ["class-variance-authority", "clsx", "tailwind-merge", "tailwindcss-animate"],
+      "automerge": true,
+      "groupName": "tailwind utils"
+    },
+    {
       "matchPackageNames": ["swagger-ui-react", "lucide-react", "lucide-vue-next"],
       "automerge": true
     },
