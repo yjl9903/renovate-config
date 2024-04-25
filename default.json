@@ -53,9 +53,17 @@
       "groupName": "Astro monorepo"
     },
     {
+      "matchPackagePrefixes": ["drizzle-"],
+      "groupName": "drizzle"
+    },
+    {
       "matchPackagePrefixes": ["@iconify-json"],
       "automerge": true,
       "groupName": "iconify"
+    },
+    {
+      "matchPackageNames": ["swagger-ui-react", "lucide-react", "lucide-vue-next"],
+      "automerge": true
     },
     {
       "matchDepTypes": [
