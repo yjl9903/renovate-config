@@ -17,6 +17,10 @@
   },
   "packageRules": [
     {
+      "matchDepTypes": ["packageManager"],
+      "prPriority": 100
+    },
+    {
       "matchSourceUrls": [
         "https://github.com/yjl9903/breadc"
       ],
