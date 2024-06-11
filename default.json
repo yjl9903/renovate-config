@@ -57,6 +57,13 @@
       "groupName": "Astro monorepo"
     },
     {
+      "matchSourceUrls": [
+        "https://github.com/honojs/hono"
+      ],
+      "matchPackagePrefixes": ["@hono"],
+      "groupName": "hono"
+    },
+    {
       "matchPackagePrefixes": ["drizzle-"],
       "groupName": "drizzle"
     },
