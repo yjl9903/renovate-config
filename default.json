@@ -54,6 +54,7 @@
       "matchSourceUrls": [
         "https://github.com/withastro/astro"
       ],
+      "matchPackagePrefixes": ["@astrojs"],
       "groupName": "Astro monorepo"
     },
     {
