@@ -54,6 +54,9 @@
       "matchSourceUrls": [
         "https://github.com/withastro/astro"
       ],
+      "groupName": "Astro monorepo"
+    },
+    {
       "matchPackagePrefixes": ["@astrojs"],
       "groupName": "Astro monorepo"
     },
@@ -61,6 +64,9 @@
       "matchSourceUrls": [
         "https://github.com/honojs/hono"
       ],
+      "groupName": "hono"
+    },
+    {
       "matchPackagePrefixes": ["@hono"],
       "groupName": "hono"
     },
