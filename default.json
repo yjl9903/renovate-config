@@ -80,6 +80,10 @@
       "groupName": "iconify"
     },
     {
+      "matchPackagePrefixes": [" @radix-ui"],
+      "groupName": "radix-ui"
+    },
+    {
       "matchPackageNames": ["class-variance-authority", "clsx", "tailwind-merge", "tailwindcss-animate"],
       "automerge": true,
       "groupName": "tailwind utils"
