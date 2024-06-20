@@ -93,6 +93,14 @@
       "groupName": "wrangler"
     },
     {
+      "matchPackageNames": ["vite"],
+      "groupName": "vite"
+    },
+    {
+      "matchPackagePrefixes": ["@vitejs"],
+      "groupName": "vite"
+    },
+    {
       "matchPackageNames": ["swagger-ui-react", "lucide-react", "lucide-vue-next", "type-fest"],
       "automerge": true
     },
