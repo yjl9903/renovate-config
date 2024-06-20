@@ -93,6 +93,14 @@
       "groupName": "wrangler"
     },
     {
+      "matchPackageNames": ["react-hook-form"],
+      "groupName": "react-hook-form"
+    },
+    {
+      "matchPackagePrefixes": ["@hookform"],
+      "groupName": "react-hook-form"
+    },
+    {
       "matchPackageNames": ["vite"],
       "groupName": "vite"
     },
