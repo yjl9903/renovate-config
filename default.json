@@ -80,7 +80,7 @@
       "groupName": "iconify"
     },
     {
-      "matchPackagePrefixes": [" @radix-ui"],
+      "matchPackagePrefixes": ["@radix-ui"],
       "groupName": "radix-ui"
     },
     {
