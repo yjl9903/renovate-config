@@ -89,6 +89,10 @@
       "groupName": "tailwind utils"
     },
     {
+      "matchPackageNames": ["wrangler", "@cloudflare/workers-types"],
+      "groupName": "wrangler"
+    },
+    {
       "matchPackageNames": ["swagger-ui-react", "lucide-react", "lucide-vue-next", "type-fest"],
       "automerge": true
     },
