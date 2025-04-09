@@ -89,7 +89,7 @@
       "groupName": "tailwind utils"
     },
     {
-      "matchPackageNames": ["wrangler", "@cloudflare/workers-types"],
+      "matchPackageNames": ["wrangler", "@cloudflare/workers-types", "@cloudflare/kv-asset-handler"],
       "groupName": "wrangler"
     },
     {
