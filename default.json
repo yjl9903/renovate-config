@@ -18,6 +18,21 @@
   },
   "packageRules": [
     {
+      "description": "Align npm package updates with pnpm v11's default minimumReleaseAge",
+      "matchDatasources": ["npm"],
+      "internalChecksFilter": "strict",
+      "minimumReleaseAge": "1 day"
+    },
+    {
+      "description": "Do not require Renovate minimumReleaseAge for pnpm-controlled lockfile maintenance",
+      "matchDatasources": ["npm"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "minimumReleaseAge": null,
+      "prBodyNotes": [
+        "Renovate delegates lockfile maintenance to the package manager; pnpm v11 enforces its own minimumReleaseAge during resolution."
+      ]
+    },
+    {
       "matchDepTypes": ["packageManager"],
       "prPriority": 100
     },
