@@ -7,6 +7,10 @@
     "group:recommended",
     "group:monorepos"
   ],
+  "baseBranchPatterns": [
+    "deps",
+    "main"
+  ],
   "labels": [
     "renovate"
   ],
@@ -17,6 +21,18 @@
     "platformAutomerge": true
   },
   "packageRules": [
+    {
+      "description": "Only update GitHub Actions on main",
+      "matchBaseBranches": ["main"],
+      "matchManagers": ["!github-actions"],
+      "enabled": false
+    },
+    {
+      "description": "Do not update GitHub Actions on deps",
+      "matchBaseBranches": ["deps"],
+      "matchManagers": ["github-actions"],
+      "enabled": false
+    },
     {
       "description": "Align npm package updates with pnpm v11's default minimumReleaseAge",
       "matchDatasources": ["npm"],
