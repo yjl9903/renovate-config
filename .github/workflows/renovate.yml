@@ -32,10 +32,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout deps
+      - name: Checkout main
         uses: actions/checkout@v7
         with:
-          ref: deps
+          ref: main
           fetch-depth: 0
 
       - name: Setup pnpm
@@ -99,6 +99,21 @@ jobs:
           for attempt in 1 2 3; do
             git fetch --prune origin \
               '+refs/heads/*:refs/remotes/origin/*'
+
+            if ! git show-ref --verify --quiet \
+              "refs/remotes/origin/${DEPS_BRANCH}"; then
+              echo "::notice::${DEPS_BRANCH} does not exist; creating it from ${MAIN_BRANCH}."
+
+              # An empty lease only permits creating a branch that is still absent.
+              if git push \
+                --force-with-lease="refs/heads/${DEPS_BRANCH}:" \
+                origin "origin/${MAIN_BRANCH}:refs/heads/${DEPS_BRANCH}"; then
+                exit 0
+              fi
+
+              echo "::warning::${DEPS_BRANCH} was created concurrently; retrying."
+              continue
+            fi
 
             expected_deps="$(git rev-parse "origin/${DEPS_BRANCH}")"
             git checkout -B "${DEPS_BRANCH}" "origin/${DEPS_BRANCH}"
