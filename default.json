@@ -97,6 +97,11 @@
       "groupName": "drizzle"
     },
     {
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["fumadocs-*", "@fumadocs/**", "create-fumadocs-app"],
+      "groupName": "fumadocs"
+    },
+    {
       "matchPackagePrefixes": ["@iconify-json"],
       "automerge": true,
       "groupName": "iconify"
