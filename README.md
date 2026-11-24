@@ -60,6 +60,9 @@ Allow GitHub Actions to create pull requests in the repository settings and
 ensure the `deps` branch rules permit the workflow's force push with lease.
 The first push to `main` initializes `deps` automatically.
 
+If your repository requires additional pnpm install flags for the lockfile
+refresh, pass them as a space-separated string in `with.pnpm-install-args`.
+
 ## License
 
 MIT License © 2023 [XLor](https://github.com/yjl9903)

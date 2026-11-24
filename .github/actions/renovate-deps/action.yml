@@ -1,6 +1,11 @@
 name: Renovate dependency updates
 description: Sync the Renovate dependency branch and collect its updates in a single pull request.
 
+inputs:
+  pnpm-install-args:
+    description: Space-separated flags for pnpm install when refreshing the lockfile.
+    default: ''
+
 runs:
   using: composite
   steps:
@@ -47,6 +52,7 @@ runs:
       working-directory: ${{ github.workspace }}
       env:
         OPERATION: ${{ steps.event.outputs.operation }}
+        PNPM_INSTALL_ARGS: ${{ inputs.pnpm-install-args }}
         MERGED_DEPS_SHA: ${{ github.event.pull_request.head.sha }}
         GH_TOKEN: ${{ steps.event.outputs.operation == 'open-pr' && github.token || '' }}
       run: bash "$GITHUB_ACTION_PATH/renovate-deps.sh" "$OPERATION"

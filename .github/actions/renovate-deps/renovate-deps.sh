@@ -62,9 +62,11 @@ rebase_deps_onto_main() {
 
 refresh_lockfile() {
   local -a other_paths=(. ':(exclude)pnpm-lock.yaml')
+  local -a install_args
+  read -r -a install_args <<< "--no-frozen-lockfile ${PNPM_INSTALL_ARGS:-}"
 
   # Read the tool versions from the rebased checkout on each attempt.
-  mise exec -- pnpm install --no-frozen-lockfile
+  mise exec -- pnpm install "${install_args[@]}"
 
   if ! git diff --quiet -- "${other_paths[@]}" || ! git diff --cached --quiet -- "${other_paths[@]}"; then
     echo '::error::pnpm install changed files other than pnpm-lock.yaml.'
