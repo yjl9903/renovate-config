@@ -19,7 +19,7 @@ rebase_in_progress() {
     test -d "$(git rev-parse --git-path rebase-apply)"
 }
 
-rebase_with_main_winning() {
+rebase_deps_onto_main() {
   local path
   local -a conflicts
 
@@ -105,7 +105,7 @@ sync_deps() {
       # The trees match after a squash merge, but the commit histories differ.
       git reset --hard "$main_ref"
     else
-      rebase_with_main_winning
+      rebase_deps_onto_main
     fi
 
     refresh_lockfile
@@ -140,7 +140,7 @@ reset_deps() {
   push_deps "$current_deps" "$main_ref"
 }
 
-open_rollup_pr() {
+open_deps_pr() {
   local existing_pr
 
   fetch_branches
@@ -165,7 +165,7 @@ open_rollup_pr() {
   )"
 
   if [[ -n "$existing_pr" ]]; then
-    echo "Pull request #${existing_pr} already rolls deps into main."
+    echo "Pull request #${existing_pr} is already open from deps to main."
     return
   fi
 
@@ -173,14 +173,14 @@ open_rollup_pr() {
     --base main \
     --head deps \
     --title 'chore: update deps' \
-    --body $'This PR collects the dependency updates merged into the dependency branch.
+    --body $'This PR collects the Renovate updates merged into deps.
 
-Review the combined changes and squash-merge this PR when the rollup is ready.'
+Review the combined changes, then squash-merge this PR when ready.'
 }
 
 case "$1" in
   sync) sync_deps ;;
   reset) reset_deps ;;
-  open-pr) open_rollup_pr ;;
-  *) echo "::error::Unknown rollup operation: $1"; exit 1 ;;
+  open-pr) open_deps_pr ;;
+  *) echo "::error::Unknown dependency update operation: $1"; exit 1 ;;
 esac

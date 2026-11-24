@@ -49,4 +49,4 @@ runs:
         OPERATION: ${{ steps.event.outputs.operation }}
         MERGED_DEPS_SHA: ${{ github.event.pull_request.head.sha }}
         GH_TOKEN: ${{ steps.event.outputs.operation == 'open-pr' && github.token || '' }}
-      run: bash "$GITHUB_ACTION_PATH/rollup.sh" "$OPERATION"
+      run: bash "$GITHUB_ACTION_PATH/renovate-deps.sh" "$OPERATION"
