@@ -14,6 +14,40 @@ push_deps() {
   git push --force-with-lease="${deps_target}:${expected_deps}" origin "${source_ref}:${deps_target}"
 }
 
+create_deps_from_main() {
+  echo '::notice::deps does not exist. Creating it from main.'
+  # An empty lease only permits creating a branch that is still absent.
+  push_deps '' "$main_ref"
+}
+
+bootstrap_deps() {
+  local attempt
+
+  if git show-ref --verify --quiet "$deps_ref"; then
+    return
+  fi
+
+  fetch_branches
+  for attempt in 1 2 3; do
+    if git show-ref --verify --quiet "$deps_ref"; then
+      return
+    fi
+
+    if create_deps_from_main; then
+      echo 'created=true' >> "$GITHUB_OUTPUT"
+      return
+    fi
+
+    echo "::warning::Could not create deps on attempt ${attempt}. Checking for concurrent updates."
+    fetch_branches
+  done
+
+  if ! git show-ref --verify --quiet "$deps_ref"; then
+    echo '::error::Could not create deps after three attempts.'
+    return 1
+  fi
+}
+
 rebase_in_progress() {
   test -d "$(git rev-parse --git-path rebase-merge)" ||
     test -d "$(git rev-parse --git-path rebase-apply)"
@@ -62,9 +96,11 @@ rebase_deps_onto_main() {
 
 refresh_lockfile() {
   local -a other_paths=(. ':(exclude)pnpm-lock.yaml')
+  local -x MISE_ENABLE_TOOLS=node,pnpm
 
   # Read the tool versions from the rebased checkout on each attempt.
-  mise exec -- pnpm install --no-frozen-lockfile
+  mise install node pnpm
+  mise exec -- pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile --fix-lockfile
 
   if ! git diff --quiet -- "${other_paths[@]}" || ! git diff --cached --quiet -- "${other_paths[@]}"; then
     echo '::error::pnpm install changed files other than pnpm-lock.yaml.'
@@ -88,9 +124,7 @@ sync_deps() {
     fetch_branches
 
     if ! git show-ref --verify --quiet "$deps_ref"; then
-      echo '::notice::deps does not exist. Creating it from main.'
-      # An empty lease only permits creating a branch that is still absent.
-      if push_deps '' "$main_ref"; then
+      if create_deps_from_main; then
         return
       fi
 
@@ -179,6 +213,7 @@ Review the combined changes, then squash-merge this PR when ready.'
 }
 
 case "$1" in
+  bootstrap) bootstrap_deps ;;
   sync) sync_deps ;;
   reset) reset_deps ;;
   open-pr) open_deps_pr ;;
