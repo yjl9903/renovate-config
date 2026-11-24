@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-main_ref="refs/remotes/origin/${MAIN_BRANCH}"
-deps_ref="refs/remotes/origin/${DEPS_BRANCH}"
-deps_target="refs/heads/${DEPS_BRANCH}"
+main_ref=refs/remotes/origin/main
+deps_ref=refs/remotes/origin/deps
+deps_target=refs/heads/deps
 
 fetch_branches() {
   git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
@@ -63,8 +63,8 @@ rebase_with_main_winning() {
 refresh_lockfile() {
   local -a other_paths=(. ':(exclude)pnpm-lock.yaml')
 
-  # CI defaults to a frozen lockfile.
-  pnpm install --no-frozen-lockfile
+  # Read the tool versions from the rebased checkout on each attempt.
+  mise exec -- pnpm install --no-frozen-lockfile
 
   if ! git diff --quiet -- "${other_paths[@]}" || ! git diff --cached --quiet -- "${other_paths[@]}"; then
     echo '::error::pnpm install changed files other than pnpm-lock.yaml.'
@@ -88,18 +88,18 @@ sync_deps() {
     fetch_branches
 
     if ! git show-ref --verify --quiet "$deps_ref"; then
-      echo "::notice::${DEPS_BRANCH} does not exist; creating it from ${MAIN_BRANCH}."
+      echo '::notice::deps does not exist. Creating it from main.'
       # An empty lease only permits creating a branch that is still absent.
       if push_deps '' "$main_ref"; then
         return
       fi
 
-      echo "::warning::Could not create ${DEPS_BRANCH}; retrying."
+      echo '::warning::Could not create deps. Retrying.'
       continue
     fi
 
     expected_deps="$(git rev-parse "$deps_ref")"
-    git checkout -B "$DEPS_BRANCH" "$deps_ref"
+    git checkout -B deps "$deps_ref"
 
     if git diff --quiet "$main_ref" "$deps_ref"; then
       # The trees match after a squash merge, but the commit histories differ.
@@ -108,18 +108,16 @@ sync_deps() {
       rebase_with_main_winning
     fi
 
-    if [[ "$REFRESH_LOCKFILE" == true ]]; then
-      refresh_lockfile
-    fi
+    refresh_lockfile
 
     if push_deps "$expected_deps" HEAD; then
       return
     fi
 
-    echo "::warning::Could not push ${DEPS_BRANCH} on attempt ${attempt}; retrying."
+    echo "::warning::Could not push deps on attempt ${attempt}. Retrying."
   done
 
-  echo "::error::Could not synchronize ${DEPS_BRANCH} after three attempts."
+  echo '::error::Could not synchronize deps after three attempts.'
   return 1
 }
 
@@ -129,13 +127,13 @@ reset_deps() {
   fetch_branches
 
   if ! git show-ref --verify --quiet "$deps_ref"; then
-    echo "::notice::${DEPS_BRANCH} has already been deleted."
+    echo '::notice::deps has already been deleted.'
     return
   fi
 
   current_deps="$(git rev-parse "$deps_ref")"
   if [[ "$current_deps" != "$MERGED_DEPS_SHA" ]]; then
-    echo "::notice::${DEPS_BRANCH} advanced after the PR was merged; keeping the newer commits."
+    echo '::notice::deps advanced after the PR was merged. Keeping the newer commits.'
     return
   fi
 
@@ -148,32 +146,32 @@ open_rollup_pr() {
   fetch_branches
 
   if ! git show-ref --verify --quiet "$deps_ref"; then
-    echo "::notice::${DEPS_BRANCH} has been deleted."
+    echo '::notice::deps has been deleted.'
     return
   fi
 
   if git diff --quiet "$main_ref" "$deps_ref"; then
-    echo "${DEPS_BRANCH} and ${MAIN_BRANCH} have identical content; no pull request is needed."
+    echo 'deps and main have identical content. No pull request is needed.'
     return
   fi
 
   existing_pr="$(
     gh pr list \
       --state open \
-      --base "$MAIN_BRANCH" \
-      --head "$DEPS_BRANCH" \
+      --base main \
+      --head deps \
       --json number \
       --jq '.[0].number // empty'
   )"
 
   if [[ -n "$existing_pr" ]]; then
-    echo "Pull request #${existing_pr} already rolls ${DEPS_BRANCH} into ${MAIN_BRANCH}."
+    echo "Pull request #${existing_pr} already rolls deps into main."
     return
   fi
 
   gh pr create \
-    --base "$MAIN_BRANCH" \
-    --head "$DEPS_BRANCH" \
+    --base main \
+    --head deps \
     --title 'chore: update deps' \
     --body $'This PR collects the dependency updates merged into the dependency branch.
 

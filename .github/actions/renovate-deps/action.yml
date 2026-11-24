@@ -1,20 +1,6 @@
 name: Renovate dependency updates
 description: Sync the Renovate dependency branch and collect its updates in a single pull request.
 
-inputs:
-  base-branch:
-    description: Branch targeted by the pull request.
-    default: main
-  deps-branch:
-    description: Branch that receives Renovate dependency updates.
-    default: deps
-  node-version:
-    description: Node.js version used to refresh the pnpm lockfile.
-    default: '24.18.0'
-  refresh-lockfile:
-    description: Refresh pnpm-lock.yaml after syncing the dependency branch.
-    default: 'true'
-
 runs:
   using: composite
   steps:
@@ -22,8 +8,6 @@ runs:
       id: event
       shell: bash
       env:
-        MAIN_BRANCH: ${{ inputs.base-branch }}
-        DEPS_BRANCH: ${{ inputs.deps-branch }}
         PUSH_DELETED: ${{ github.event.deleted }}
         PR_ACTION: ${{ github.event.action }}
         PR_MERGED: ${{ github.event.pull_request.merged }}
@@ -31,19 +15,14 @@ runs:
         PR_HEAD: ${{ github.event.pull_request.head.ref }}
         PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
       run: |
-        if [[ "$MAIN_BRANCH" == "$DEPS_BRANCH" ]]; then
-          echo '::error::The base and dependency branches must be different.'
-          exit 1
-        fi
-
         if [[ "$GITHUB_EVENT_NAME" == push && "$PUSH_DELETED" != true ]]; then
           case "$GITHUB_REF" in
-            "refs/heads/$MAIN_BRANCH") echo 'operation=sync' >> "$GITHUB_OUTPUT" ;;
-            "refs/heads/$DEPS_BRANCH") echo 'operation=open-pr' >> "$GITHUB_OUTPUT" ;;
+            refs/heads/main) echo 'operation=sync' >> "$GITHUB_OUTPUT" ;;
+            refs/heads/deps) echo 'operation=open-pr' >> "$GITHUB_OUTPUT" ;;
           esac
         elif [[ "$GITHUB_EVENT_NAME" == pull_request && "$PR_ACTION" == closed &&
-                 "$PR_MERGED" == true && "$PR_BASE" == "$MAIN_BRANCH" &&
-                 "$PR_HEAD" == "$DEPS_BRANCH" && "$PR_HEAD_REPO" == "$GITHUB_REPOSITORY" ]]; then
+                 "$PR_MERGED" == true && "$PR_BASE" == main &&
+                 "$PR_HEAD" == deps && "$PR_HEAD_REPO" == "$GITHUB_REPOSITORY" ]]; then
           echo 'operation=reset' >> "$GITHUB_OUTPUT"
         fi
 
@@ -51,19 +30,16 @@ runs:
       if: steps.event.outputs.operation != ''
       uses: actions/checkout@v7
       with:
-        ref: refs/heads/${{ inputs.base-branch }}
+        ref: refs/heads/main
         fetch-depth: 0
 
-    - name: Setup pnpm
-      if: steps.event.outputs.operation == 'sync' && inputs.refresh-lockfile == 'true'
-      uses: pnpm/action-setup@v6.0.9
-
-    - name: Setup Node.js
-      if: steps.event.outputs.operation == 'sync' && inputs.refresh-lockfile == 'true'
-      uses: actions/setup-node@v7
+    - name: Set up mise
+      if: steps.event.outputs.operation == 'sync'
+      uses: jdx/mise-action@v5
       with:
-        node-version: ${{ inputs.node-version }}
-        cache: pnpm
+        install: false
+        cache: false
+        env: false
 
     - name: Update the dependency branch or pull request
       if: steps.event.outputs.operation != ''
@@ -71,9 +47,6 @@ runs:
       working-directory: ${{ github.workspace }}
       env:
         OPERATION: ${{ steps.event.outputs.operation }}
-        MAIN_BRANCH: ${{ inputs.base-branch }}
-        DEPS_BRANCH: ${{ inputs.deps-branch }}
-        REFRESH_LOCKFILE: ${{ inputs.refresh-lockfile }}
         MERGED_DEPS_SHA: ${{ github.event.pull_request.head.sha }}
         GH_TOKEN: ${{ steps.event.outputs.operation == 'open-pr' && github.token || '' }}
       run: bash "$GITHUB_ACTION_PATH/rollup.sh" "$OPERATION"

@@ -28,7 +28,8 @@ dependency updates in a single pull request. [Action definition](.github/actions
 3. After that pull request is merged, `deps` is reset to `main` unless Renovate
    has already added newer commits.
 
-For a pnpm repository, add this workflow at `.github/workflows/renovate.yml`.
+Add this workflow at `.github/workflows/renovate.yml`. The action uses the Node.js
+and pnpm versions from your repository's `mise.toml` after rebasing `deps`.
 
 ```yaml
 name: Renovate
@@ -58,12 +59,6 @@ jobs:
 Allow GitHub Actions to create pull requests in the repository settings and
 ensure the `deps` branch rules permit the workflow's force push with lease.
 The first push to `main` initializes `deps` automatically.
-
-The action reads the pnpm version from the root `package.json` and uses Node.js
-`24.18.0` by default. Set `node-version` to override it, or set
-`refresh-lockfile: 'false'` to use the branch and PR automation without pnpm.
-If you override `base-branch` or `deps-branch`, use the same branch names in the
-workflow triggers and your Renovate configuration.
 
 ## License
 
