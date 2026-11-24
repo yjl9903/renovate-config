@@ -10,15 +10,15 @@ Add this preset to your `renovate.json`.
 }
 ```
 
-## Dependency rollup workflow
+## Renovate dependency updates
 
-The default preset uses two Renovate base branches:
+The default preset uses two Renovate base branches.
 
-- GitHub Actions updates target `main`, so the rollup workflow itself stays current.
+- GitHub Actions updates target `main`, so workflow dependencies stay current.
 - All other dependency updates target `deps`.
 
-The dependency rollup action keeps `deps` synchronized with `main` and maintains
-a single rollup pull request. [Action definition](.github/actions/dependency-rollup/action.yml)
+The `renovate-deps` action keeps `deps` synchronized with `main` and combines
+dependency updates in a single pull request. [Action definition](.github/actions/renovate-deps/action.yml)
 
 1. A push to `main` creates `deps` from `main` when it is missing. Otherwise,
    it rebases `deps` onto `main`, resolves conflicts in favor of `main`,
@@ -49,10 +49,10 @@ concurrency:
   queue: max
 
 jobs:
-  dependency-rollup:
+  renovate-deps:
     runs-on: ubuntu-latest
     steps:
-      - uses: yjl9903/renovate-config/.github/actions/dependency-rollup@main
+      - uses: yjl9903/renovate-config/.github/actions/renovate-deps@main
 ```
 
 Allow GitHub Actions to create pull requests in the repository settings and

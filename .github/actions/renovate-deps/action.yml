@@ -1,9 +1,9 @@
-name: Renovate dependency rollup
-description: Sync a Renovate dependency branch and maintain its rollup pull request.
+name: Renovate dependency updates
+description: Sync the Renovate dependency branch and collect its updates in a single pull request.
 
 inputs:
   base-branch:
-    description: Branch that receives the dependency rollup.
+    description: Branch targeted by the pull request.
     default: main
   deps-branch:
     description: Branch that receives Renovate dependency updates.
@@ -18,7 +18,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Select the rollup operation
+    - name: Select the operation for this event
       id: event
       shell: bash
       env:
@@ -65,7 +65,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: pnpm
 
-    - name: Maintain the dependency rollup
+    - name: Update the dependency branch or pull request
       if: steps.event.outputs.operation != ''
       shell: bash
       working-directory: ${{ github.workspace }}
