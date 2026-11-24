@@ -1,0 +1,52 @@
+name: Renovate dependency updates
+description: Sync the Renovate dependency branch and collect its updates in a single pull request.
+
+runs:
+  using: composite
+  steps:
+    - name: Select the operation for this event
+      id: event
+      shell: bash
+      env:
+        PUSH_DELETED: ${{ github.event.deleted }}
+        PR_ACTION: ${{ github.event.action }}
+        PR_MERGED: ${{ github.event.pull_request.merged }}
+        PR_BASE: ${{ github.event.pull_request.base.ref }}
+        PR_HEAD: ${{ github.event.pull_request.head.ref }}
+        PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      run: |
+        if [[ "$GITHUB_EVENT_NAME" == push && "$PUSH_DELETED" != true ]]; then
+          case "$GITHUB_REF" in
+            refs/heads/main) echo 'operation=sync' >> "$GITHUB_OUTPUT" ;;
+            refs/heads/deps) echo 'operation=open-pr' >> "$GITHUB_OUTPUT" ;;
+          esac
+        elif [[ "$GITHUB_EVENT_NAME" == pull_request && "$PR_ACTION" == closed &&
+                 "$PR_MERGED" == true && "$PR_BASE" == main &&
+                 "$PR_HEAD" == deps && "$PR_HEAD_REPO" == "$GITHUB_REPOSITORY" ]]; then
+          echo 'operation=reset' >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Checkout the base branch
+      if: steps.event.outputs.operation != ''
+      uses: actions/checkout@v7
+      with:
+        ref: refs/heads/main
+        fetch-depth: 0
+
+    - name: Set up mise
+      if: steps.event.outputs.operation == 'sync'
+      uses: jdx/mise-action@v5
+      with:
+        install: false
+        cache: false
+        env: false
+
+    - name: Update the dependency branch or pull request
+      if: steps.event.outputs.operation != ''
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      env:
+        OPERATION: ${{ steps.event.outputs.operation }}
+        MERGED_DEPS_SHA: ${{ github.event.pull_request.head.sha }}
+        GH_TOKEN: ${{ steps.event.outputs.operation == 'open-pr' && github.token || '' }}
+      run: bash "$GITHUB_ACTION_PATH/renovate-deps.sh" "$OPERATION"
