@@ -63,8 +63,7 @@ When `deps` is missing, the next push to `main` creates it before installing the
 toolchain. When `deps` already exists, the action installs the selected Node.js
 and pnpm versions after rebasing.
 
-If your repository requires additional pnpm install flags for the lockfile
-refresh, pass them as a space-separated string in `with.pnpm-install-args`.
+The lockfile refresh repairs missing entries and skips lifecycle scripts.
 
 ## License
 
