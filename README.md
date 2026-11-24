@@ -10,7 +10,7 @@ Add this preset to your `renovate.json`.
 }
 ```
 
-## Renovate dependency updates
+## Renovate dependency update workflow
 
 The default preset uses two Renovate base branches.
 
